@@ -37,5 +37,5 @@ terraform.rc
 
 .terraform.lock.hcl
 
-./ec2_private_key.ppk
-./ec2_pub_key
+/ec2_private_key.ppk
+/ec2_pub_key
