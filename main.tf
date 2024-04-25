@@ -19,22 +19,51 @@ resource "aws_key_pair" "deployer" {
   public_key = file("${path.module}/ec2_pub_key")
 }
 
-resource "aws_instance" "test_server" {
-  ami           = var.instance_ami
+# ASG with Launch template
+resource "aws_launch_template" "test_server" {
+  name_prefix   = "test_server"
+  image_id           = var.instance_ami
   instance_type = var.instance_type
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   key_name = aws_key_pair.deployer.key_name
-  tags = {
-    Name = "Test Linux 01"
-    Env = "Dev"
+
+  network_interfaces {
+    associate_public_ip_address = false
+    subnet_id                   = aws_subnet.sh_subnet_2.id
+    security_groups             = [aws_security_group.sh_sg_for_ec2.id]
+  }
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "Sharmi-instance"
+    }
   }
 
-  iam_instance_profile = var.instance_role
+#  iam_instance_profile = var.instance_role???????????????????????????????????????????????????????
+  iam_instance_profile {
+    arn = var.instance_role
+  }
 
-  user_data = file("init_script_on_instance.sh")
+  user_data = filebase64("init_script_on_instance.sh")
 
   depends_on = [aws_s3_bucket.bucket_for_ec2]
 }
 
+resource "aws_autoscaling_group" "sh_asg" {
+  # no of instances
+  desired_capacity = 3
+  max_size         = 4
+  min_size         = 2
 
+  # Connect to the target group
+  target_group_arns = [aws_lb_target_group.sh_alb_tg.arn]
 
+  vpc_zone_identifier = [ # Creating EC2 instances in private subnet
+    aws_subnet.sh_subnet_2.id
+  ]
+
+  launch_template {
+    id      = aws_launch_template.test_server.id
+    version = "$Latest"
+  }
+}

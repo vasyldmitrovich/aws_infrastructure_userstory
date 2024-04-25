@@ -4,6 +4,12 @@ db_user_root=root
 db_user=myuser
 db_password=mypassword
 
+# Install Apache
+sudo apt update &&
+sudo apt install apache2 -y &&
+sudo ufw allow 'Apache' &&
+sudo sed -i "/<body>/a\<h1>Hello World from $(hostname -f)</h1>" /var/www/html/index.html
+
 # Install DB
 sudo apt update
 sudo apt install mariadb-server -y
@@ -46,10 +52,6 @@ mvn clean package
 java -jar ./target/*.jar &
 echo "$!" > $1/java_backend_PID.txt
 
-echo "start install apache" >> $1/logfile.txt
-sudo apt update &&
-sudo apt install apache2 -y &&
-sudo ufw allow 'Apache' &&
 sudo apt-get update &&
 sudo apt-get install -y ca-certificates curl gnupg &&
 sudo mkdir -p /etc/apt/keyrings &&
@@ -58,4 +60,3 @@ NODE_MAJOR=20
 echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list &&
 sudo apt update &&
 sudo apt install nodejs -qy &&
-echo "finish install apache" >> $1/logfile.txt
