@@ -35,5 +35,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-ec2_private_key.ppk
-ec2_pub_key
+.terraform.lock.hcl
+
+./ec2_private_key.ppk
+./ec2_pub_key
