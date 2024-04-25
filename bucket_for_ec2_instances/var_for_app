@@ -1,0 +1,3 @@
+export DB_USERSTORYPROJ_URL="jdbc:mariadb://localhost:3306/userstory"
+export DB_USERSTORYPROJ_USER="myuser"
+export DB_USERSTORYPROJ_PASSWORD="mypassword"
