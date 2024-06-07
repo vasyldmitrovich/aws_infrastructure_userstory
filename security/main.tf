@@ -41,9 +41,9 @@ resource "aws_security_group" "ec2_sg" {
 }
 
 # Security group
-resource "aws_security_group" "sh_sg_for_elb" {
-  name   = "sharmi-sg_for_elb"
-  vpc_id = aws_vpc.sh_main.id
+resource "aws_security_group" "user_story_sg_for_elb" {
+  name   = "user-story_-sg_for_elb"
+  vpc_id = var.vpc_id
 
   # allow only http(80) and https(443)
   dynamic "ingress" {
@@ -67,16 +67,16 @@ resource "aws_security_group" "sh_sg_for_elb" {
 
 }
 
-resource "aws_security_group" "sh_sg_for_ec2" {
-  name   = "sharmi-sg_for_ec2"
-  vpc_id = aws_vpc.sh_main.id
+resource "aws_security_group" "user_story_sg_for_ec2" {
+  name   = "user-story-sg_for_ec2"
+  vpc_id = var.vpc_id
 
   ingress {
     description     = "Allow http request from Load Balancer"
     protocol        = "tcp"
     from_port       = 80 # range of
     to_port         = 80 # port numbers
-    security_groups = [aws_security_group.sh_sg_for_elb.id]
+    security_groups = [aws_security_group.user_story_sg_for_elb.id]
   }
 
   egress {

@@ -14,56 +14,33 @@ provider "aws" {
   secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
-resource "aws_key_pair" "deployer" {
-  key_name   = var.key-name
-  public_key = file("${path.module}/ec2_pub_key")
+module "network" {
+  source = "./networks/"
 }
 
-# ASG with Launch template
-resource "aws_launch_template" "test_server" {
-  name_prefix   = "test_server"
-  image_id           = var.instance_ami
-  instance_type = var.instance_type
-  key_name = aws_key_pair.deployer.key_name
-
-  network_interfaces {
-    associate_public_ip_address = false
-    subnet_id                   = aws_subnet.sh_subnet_2.id
-    security_groups             = [aws_security_group.sh_sg_for_ec2.id]
-  }
-  tag_specifications {
-    resource_type = "instance"
-
-    tags = {
-      Name = "Sharmi-instance"
-    }
-  }
-
-#  iam_instance_profile = var.instance_role???????????????????????????????????????????????????????
-  iam_instance_profile {
-    arn = var.instance_role
-  }
-
-  user_data = filebase64("init_script_on_instance.sh")
-
-  depends_on = [aws_s3_bucket.bucket_for_ec2]
+module "security" {
+  source = "./security/"
+  vpc_id = module.network.user_story_vpc_id
 }
 
-resource "aws_autoscaling_group" "sh_asg" {
-  # no of instances
-  desired_capacity = 3
-  max_size         = 4
-  min_size         = 2
+module "s3" {
+  source = "./s3/"
+}
 
-  # Connect to the target group
-  target_group_arns = [aws_lb_target_group.sh_alb_tg.arn]
+module "lb" {
+  source = "./lb/"
+  sg_for_elb_id = module.security.user_story_sg_for_elb_id
+  pub_sub1_id = module.network.user_story_pub_sub1_id
+  pub_sub1a_id = module.network.user_story_pub_sub1a_id
+  gw_id = module.network.user_story_gateway_id
+  vpc_id = module.network.user_story_vpc_id
+}
 
-  vpc_zone_identifier = [ # Creating EC2 instances in private subnet
-    aws_subnet.sh_subnet_2.id
-  ]
-
-  launch_template {
-    id      = aws_launch_template.test_server.id
-    version = "$Latest"
-  }
+module "front" {
+  source = "./front/"
+  pub_sub1_id = module.network.user_story_pub_sub1_id
+  sg_for_ec2_id = module.security.user_story_sg_for_ec2_id
+  bucket_for_ec2 = module.s3.user_story_s3_id
+  alb_tg_arn = module.lb.user_story_alb_tg_arn
+  priv_sub1a_id = module.network.user_story_private_sub1a_id
 }
