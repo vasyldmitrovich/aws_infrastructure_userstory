@@ -16,27 +16,19 @@ variable "instance_type" {
 }
 
 variable "sg_for_ec2_id" {
-  description = "Security group for load balancer"
-  type        = string
 }
 
-variable "pub_sub1_id" {
-  description = "Public subnet 1"
-  type        = string
+variable "public_subnets_ids" {
+}
+
+variable "private_subnets_ids" {
 }
 
 variable "bucket_for_ec2" {
-  description = "Bucket with data to ec2 template"
-  type        = string
 }
 
-variable "alb_tg_arn" {
-  description = "Load balancer target group arn"
-  type        = string
+variable "alb_tgt_grp_arn" {
 }
 
-variable "priv_sub1a_id" {
-  description = "Private subnet 1a"
-  type        = string
+variable "backend_count" {
 }
-

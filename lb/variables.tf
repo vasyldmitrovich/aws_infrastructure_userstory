@@ -1,24 +1,20 @@
 variable "sg_for_elb_id" {
-  description = "Security group for load balancer"
-  type        = string
-}
-
-variable "pub_sub1_id" {
-  description = "Public subnet 1"
-  type        = string
-}
-
-variable "pub_sub1a_id" {
-  description = "Public subnet 1a"
-  type        = string
-}
-
-variable "gw_id" {
-  description = "Gateway id"
-  type        = string
 }
 
 variable "vpc_id" {
-  description = "VPC id"
-  type        = string
+}
+
+variable "gw_id" {
+}
+
+variable "public_subnets" {
+}
+
+variable "private_subnets" {
+}
+
+variable "backend_count" {
+  description = "Number Of Backends For Auto Scaling Group"
+  type        = number
+  default     = 2
 }

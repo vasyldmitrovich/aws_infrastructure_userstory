@@ -30,17 +30,21 @@ module "s3" {
 module "lb" {
   source = "./lb/"
   sg_for_elb_id = module.security.user_story_sg_for_elb_id
-  pub_sub1_id = module.network.user_story_pub_sub1_id
-  pub_sub1a_id = module.network.user_story_pub_sub1a_id
-  gw_id = module.network.user_story_gateway_id
+
   vpc_id = module.network.user_story_vpc_id
+  gw_id = module.network.user_story_gw_id
+  public_subnets = module.network.vpc_public_subnets_ids
+  private_subnets = module.network.vpc_private_subnets_ids
 }
 
 module "front" {
   source = "./front/"
-  pub_sub1_id = module.network.user_story_pub_sub1_id
   sg_for_ec2_id = module.security.user_story_sg_for_ec2_id
+  public_subnets_ids = module.network.vpc_public_subnets_ids
+  private_subnets_ids = module.network.vpc_private_subnets_ids
+
   bucket_for_ec2 = module.s3.user_story_s3_id
-  alb_tg_arn = module.lb.user_story_alb_tg_arn
-  priv_sub1a_id = module.network.user_story_private_sub1a_id
+  alb_tgt_grp_arn = module.lb.user_story_alb_tgt_grp_arn
+  backend_count = module.lb.backend_count
+
 }
