@@ -6,8 +6,8 @@ resource "aws_s3_bucket" "bucket_for_ec2" {
 # Upload files to s3 Bucket
 resource "aws_s3_object" "provision_source_files" {
   bucket = aws_s3_bucket.bucket_for_ec2.id
-  for_each = fileset("data_for_ec2_instance_template/", "*")
+  for_each = fileset("${path.module}/data_for_ec2_instance_template/", "*")
   key = each.value
-  source = "data_for_ec2_instance_template/${each.value}"
-  etag = filemd5("data_for_ec2_instance_template/${each.value}")
+  source = "${path.module}/data_for_ec2_instance_template/${each.value}"
+  etag = filemd5("${path.module}/data_for_ec2_instance_template/${each.value}")
 }
